@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Node {
-	int val;
+typedef struct Podcast {
+	int id;
 	char nome[60];
-	struct Node* ini;
-	struct Node* fim;
-	struct Node* next;
-	struct Node* prev;
-}node;
-
-void add(node* base);
-void imprimeRecursiva(node* base);
+	struct Podcast* next;
+	struct Podcast* ini;
+}podcast;
+typedef struct Playlist {
+	podcast* podcast;
+	int quantidade;
+}playlist;
+void add(playlist* base);
+void imprimeRecursiva(playlist* base);
+void imprimePodcast(podcast* podcast);
 int main() {
-	node* base = (node*)malloc(sizeof(node));
-	base->next = NULL;
+	playlist* base = (playlist*)malloc(sizeof(playlist));
+	base->podcast = NULL;
+	base->quantidade = 0;
 
-	int op;
+	int escolha;
 
 	do {
 		printf("\n\n  MENU\n");
@@ -25,9 +28,9 @@ int main() {
 		printf("   0 - Sair     \n");
 		printf("\n");
 		printf("Entre com a opcao desejada: ");
-		scanf_s("%d", &op);
+		scanf_s("%d", &escolha);
 
-		switch (op)
+		switch (escolha)
 		{
 		case 1:
 			add(base);
@@ -37,36 +40,33 @@ int main() {
 			break;
 		}
 
-	} while (op);
+	} while (escolha);
 
 	return 0;
 }
 
-void add(node* base) {
-	node* new = (node*)malloc(sizeof(node));
-	node* aux = base->ini;
-	if (base->next != NULL) {
-		base->next = new;
-		new->prev = new;
-		base->ini = new;
-	}
-	while (aux->next != NULL) {
-		aux->next = aux->next;
-		if (aux->next == NULL) {
-			printf("Qual o valor do novo no: ");
-			scanf_s("%d", &new->val);
-			printf("Qual o nome do podcast:");
-			scanf_s("%s", new->nome, 60);
-		}
-	}
+void add(playlist* base) {
+	podcast* pod = base->podcast;
+	podcast* novo = (podcast*)malloc(sizeof(podcast));
+	novo->next = NULL;
+	novo->ini = NULL;
+	if (base->podcast == NULL) base->podcast = novo; 
+	if (base->podcast->next != NULL) novo->next = base->podcast->next;
+	base->quantidade = base->quantidade + 1;
+	novo->id = base->quantidade;
+	printf("Digite o podcast: ");
+	scanf_s("%s", &novo->nome, 60);
 }
 
 
-void imprimeRecursiva(node* base) {
-	if (base->next != NULL) {
-		printf("Valor:%d\nNome do podcast:", base->next->val);
-			printf("%s", base->next->nome);
-		imprimeRecursiva(base->next);
+void imprimeRecursiva(playlist* base) {
+
+	if (base->podcast != NULL) {
+		podcast* aux = base->podcast;
+		imprimePodcast(aux);
 	}
-	else return 0;
+}
+void imprimePodcast(podcast* podcast) {
+	printf("\n [%d] %s", podcast->id, podcast->nome);
+	if (podcast->next != NULL) imprimePodcast(podcast->next);
 }
